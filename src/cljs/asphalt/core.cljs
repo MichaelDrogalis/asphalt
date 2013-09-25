@@ -10,7 +10,7 @@
 (def receive-fn
   (fn [message]
     (.log js/console "Received message:")
-    (.log js/console message)))
+    (.log js/console (:snapshot (read-string (.-data message))))))
 
 (set! (.-onopen ws) open-fn)
 (set! (.-onmessage ws) message-fn)
