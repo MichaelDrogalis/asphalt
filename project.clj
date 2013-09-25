@@ -8,7 +8,6 @@
                  [hiccup "1.0.2"]
                  [hiccups "0.2.0"]]
   :plugins [[lein-cljsbuild "0.3.3"]]
-  :source-paths ["src/clj"]
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
                         :compiler {:output-to "resources/main.js"
                                    :optimizations :whitespace
