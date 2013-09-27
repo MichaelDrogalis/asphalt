@@ -26,7 +26,7 @@
 (defn parse-src [response]
   (first (:srcs (read-string response))))
 
-(defn reverse-links [driver quad]
+(defn ingress-pairing [quad driver]
   (js/$.ajax
    (clj->js
     {:type "POST"
@@ -35,9 +35,6 @@
      :success (fn [resp & _] (log-pairs driver (parse-src resp) quad))
      :data (pr-str quad)
      :processData false})))
-
-(defn ingress-pairing [quad driver]
-  (reverse-links driver quad))
 
 (defn egress-pairing [quad driver]
   (log-pairs driver quad (:dst driver)))
