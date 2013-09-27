@@ -9,7 +9,9 @@
                  [hiccups "0.2.0"]]
   :plugins [[lein-cljsbuild "0.3.3"]]
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
-                        :compiler {:output-to "resources/main.js"
+                        :foreign-libs [{:file "https://maps.googleapis.com/maps/api/js?sensor=false"
+                                        :provides ["google.maps"]}]
+                        :compiler {:output-to "resources/compiled-cljs.js"
                                    :optimizations :whitespace
                                    :pretty-print true}}]})
 
