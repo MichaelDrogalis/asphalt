@@ -20,45 +20,43 @@
 (def open-fn
   (fn [] (.log js/console "Connection open. Rock on.")))
 
-(defn reverse-links [quad]
-  (.log js/console "Linking.")
+(defn log-pairs [driver src dst]
+  (.log js/console (:id driver) ": " (clj->js src) "/" (clj->js dst)))
+
+(defn parse-src [response]
+  (first (:srcs (read-string response))))
+
+(defn reverse-links [driver quad]
   (js/$.ajax
    (clj->js
     {:type "POST"
      :url "http://localhost:9091/rush-hour/api/reverse-links/edn"
      :contentType "application/edn"
-     :success (fn [response & _] (.log js/console (clj->js (read-string response))))
+     :success (fn [resp & _] (log-pairs driver (parse-src resp) quad))
      :data (pr-str quad)
-     :processData false}))
-  [])
+     :processData false})))
 
 (defn ingress-pairing [quad driver]
-  {:src (first (reverse-links quad))
-   :dst (:dst driver)})
+  (reverse-links driver quad))
 
 (defn egress-pairing [quad driver]
-  {:src quad
-   :dst (:dst driver)})
-
-(defn ingress-lane-pairs [quad state]
-  (map (partial ingress-pairing quad) state))
-
-(defn egress-lane-pairs [quad state]
-  (map (partial egress-pairing quad) state))
+  (log-pairs driver quad (:dst driver)))
 
 (defn ingress-all-pairs [ingress-map]
-  (into {} (map (fn [[quad state]] {quad (ingress-lane-pairs quad state)}) ingress-map)))
+  (doseq [[quad state] ingress-map]
+    (doseq [driver state]
+      (ingress-pairing quad driver))))
 
 (defn egress-all-pairs [egress-map]
-  (into {} (map (fn [[quad state]] {quad (egress-lane-pairs quad state)}) egress-map)))
+  (doseq [[quad state] egress-map]
+    (doseq [driver state]
+      (egress-pairing quad driver))))
 
 (def receive-fn
   (fn [message]
     (let [snapshot (:snapshot (read-string (.-data message)))]
-;;      (.log js/console "Received message:")
-      (clj->js (ingress-all-pairs (:ingress snapshot)))
-;;      (.log js/console (clj->js (egress-all-pairs (:egress snapshot))))
-      )))
+      (ingress-all-pairs (:ingress snapshot))
+      (egress-all-pairs (:egress snapshot)))))
 
 (set! (.-onopen ws) open-fn)
 (set! (.-onmessage ws) receive-fn)
