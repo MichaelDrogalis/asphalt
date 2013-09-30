@@ -9,7 +9,7 @@
         {:center (google.maps.LatLng. 39.95005 -75.157066)
          :zoom 16
          :mapTypeId google.maps.MapTypeId/ROADMAP}]
-    (google.maps.Map. (by-id "map") (clj->js map-options))))
+    (def gmap (google.maps.Map. (by-id "map") (clj->js map-options)))))
 
 (.addDomListener google.maps.event js/window "load" initialize-map)
 
@@ -24,7 +24,9 @@
   (.log js/console (:id driver) ": " src "/" dst))
 
 (defn plot-coordinates [{:keys [lat long]}]
-  (.log js/console lat ", " long))
+  (let [points (google.maps.MVCArray. (clj->js [(google.maps.LatLng. lat long)]))
+        heat-map (google.maps.visualization.HeatmapLayer. (clj->js {:data points}))]
+    (.setMap heat-map gmap)))
 
 (defn triangulate-ingress [driver resp]
   (let [src (first (vals (second resp)))
