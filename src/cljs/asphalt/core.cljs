@@ -23,21 +23,22 @@
 (defn triangulate-coordinates [driver src dst]
   (.log js/console (:id driver) ": " src "/" dst))
 
-(defn plot-coordinates [coordinates]
-  (.log js/console (clj->js coordinates)))
+(defn plot-coordinates [{:keys [lat long]}]
+  (.log js/console lat ", " long))
 
-(defn triangulate-egress [resp]
+(defn triangulate-egress [driver resp]
   (let [src (first (vals (first resp)))
         dst (first (vals (second resp)))
         road-length (+ (:street.lane.install/length src)
-                       (:street.lane.install/length dst))]
+                       (:street.lane.install/length dst))
+        distance-to-front (- road-length (:front driver))]
     (js/$.ajax
      (clj->js
       {:type "POST"
        :url "http://localhost:9092/rush-hour/api/triangulate/edn"
        :contentType "application/edn"
        :success (fn [resp & _] (plot-coordinates (:coordinates (read-string resp))))
-       :data (pr-str {:src src :dst dst :gap road-length :extender "Philadelphia, PA"})
+       :data (pr-str {:src src :dst dst :gap distance-to-front :extender "Philadelphia, PA"})
        :processData false}))))
 
 (defn expand-egress [driver src dst]
@@ -46,7 +47,7 @@
     {:type "POST"
      :url "http://localhost:9091/rush-hour/api/expand-quad/edn"
      :contentType "application/edn"
-     :success (fn [resp & _] (triangulate-egress (:quads (read-string resp))))
+     :success (fn [resp & _] (triangulate-egress driver (:quads (read-string resp))))
      :data (pr-str {:quads [src dst]})
      :processData false})))
 
