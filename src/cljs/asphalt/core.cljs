@@ -1,6 +1,8 @@
 (ns asphalt.core
   (:require [cljs.reader :refer [read-string]]))
 
+(def hmap (atom nil))
+
 (defn by-id [id]
   (.getElementById js/document id))
 
@@ -13,21 +15,24 @@
 
 (.addDomListener google.maps.event js/window "load" initialize-map)
 
-(def uri "ws://localhost:9090/rush-hour/streaming/edn")
+(def uri "ws://localhost:9093/asphalt/streaming/edn")
 
 (def ws (js/WebSocket. uri))
 
 (def open-fn
   (fn [] (.log js/console "Connection open. Rock on.")))
 
-(defn plot-coordinates [{:keys [lat long]}]
-  (let [points (google.maps.MVCArray. (clj->js [(google.maps.LatLng. lat long)]))
+(defn plot-coordinates [coordinates]
+  (let [points (clj->js (map (fn [x] [(:lat x) (:long x)]) coordinates))
+        _ (.log js/console points)
         heat-map (google.maps.visualization.HeatmapLayer. (clj->js {:data points}))]
+    (.setMap @hmap nil)
+    (swap! hmap (constantly heat-map))
     (.setMap heat-map gmap)))
 
 (def receive-fn
   (fn [message]
-    (read-string (.-data message))))
+    (.log js/console (clj->js (map first (:snapshot (read-string (.-data message))))))))
 
 (set! (.-onopen ws) open-fn)
 (set! (.-onmessage ws) receive-fn)
