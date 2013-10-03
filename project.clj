@@ -7,6 +7,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-1889"]
                  [org.clojure/core.async "0.1.242.0-44b1e3-alpha"]
+                 [org.clojars.dsabanin/webbit "0.4.16"]
                  [aleph "0.3.0"]
                  [lamina "0.5.0"]
                  [clj-http "0.7.7"]]
