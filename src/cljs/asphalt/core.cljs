@@ -1,7 +1,7 @@
 (ns asphalt.core
   (:require [cljs.reader :refer [read-string]]))
 
-(def hmap (atom nil))
+(def hmap (atom (google.maps.visualization.HeatmapLayer. (clj->js {:data []}))))
 
 (defn by-id [id]
   (.getElementById js/document id))
@@ -23,16 +23,16 @@
   (fn [] (.log js/console "Connection open. Rock on.")))
 
 (defn plot-coordinates [coordinates]
-  (let [points (clj->js (map (fn [x] [(:lat x) (:long x)]) coordinates))
-        _ (.log js/console points)
-        heat-map (google.maps.visualization.HeatmapLayer. (clj->js {:data points}))]
-    (.setMap @hmap nil)
-    (swap! hmap (constantly heat-map))
-    (.setMap heat-map gmap)))
+  (let [points (map #(google.maps.LatLng. (:lat %) (:long %)) coordinates)
+        new-map (google.maps.visualization.HeatmapLayer. (clj->js {:data points}))
+        old-hmap @hmap]
+    (swap! hmap (constantly new-map))
+    (.setMap new-map gmap)
+    (.setMap old-hmap nil)))
 
 (def receive-fn
   (fn [message]
-    (.log js/console (clj->js (map first (:snapshot (read-string (.-data message))))))))
+    (plot-coordinates (map :coordinates (:snapshot (read-string (.-data message)))))))
 
 (set! (.-onopen ws) open-fn)
 (set! (.-onmessage ws) receive-fn)

@@ -28,10 +28,12 @@
                  {:body (pr-str {:src src :dst dst :gap gap :extender "Philadelphia, PA"})
                   :content-type "application/edn"}))))
 
-(defn triangulate-lane [driver src dst]
-  (let [road-length (+ (:street.lane.install/length src)
-                       (:street.lane.install/length dst))
-        gap (- road-length (:front driver))]
+(defn triangulate-ingress [driver src dst]
+  (let [gap (:front driver)]
+    (triangulate src dst gap)))
+
+(defn triangulate-egress [driver src dst]
+  (let [gap (+ (:street.lane.install/length dst) (:front driver))]
     (triangulate src dst gap)))
 
 (defn ingress-coordindates [payload]
@@ -40,7 +42,7 @@
            (fn [[quad state]]
              (map
               (fn [driver]
-                (triangulate-lane
+                (triangulate-ingress
                  driver
                  (first (vals (quad-expansion (first (:srcs (reverse-links quad))))))
                  (first (vals (quad-expansion quad)))))
@@ -53,7 +55,7 @@
            (fn [[quad state]]
              (map
               (fn [driver]
-                (triangulate-lane
+                (triangulate-egress
                  driver
                  (first (vals (quad-expansion quad)))
                  (first (vals (quad-expansion (:dst driver))))))
@@ -75,6 +77,7 @@
 
 (defn push-to-clients [ss]
   (doseq [channel @listeners]
+;;    (clojure.pprint/pprint {:snapshot ss})
     (.send channel (pr-str {:snapshot ss}))))
 
 (add-watch sim-snapshot :socket
