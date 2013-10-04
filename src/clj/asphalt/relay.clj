@@ -7,26 +7,32 @@
 
 (def trans-chan (chan 10000))
 
-(defn reverse-links [quad]
-  (read-string
-   (:body
-    (client/post "http://localhost:9091/rush-hour/api/reverse-links/edn"
-                 {:body (pr-str quad)
-                  :content-type "application/edn"}))))
+(def reverse-links
+  (memoize
+   (fn [quad]
+     (read-string
+      (:body
+       (client/post "http://localhost:9091/rush-hour/api/reverse-links/edn"
+                    {:body (pr-str quad)
+                     :content-type "application/edn"}))))))
 
-(defn quad-expansion [quad]
-  (read-string
-   (:body
-    (client/post "http://localhost:9091/rush-hour/api/expand-quad/edn"
-                 {:body (pr-str quad)
-                  :content-type "application/edn"}))))
+(def quad-expansion
+  (memoize
+   (fn [quad]
+     (read-string
+      (:body
+       (client/post "http://localhost:9091/rush-hour/api/expand-quad/edn"
+                    {:body (pr-str quad)
+                     :content-type "application/edn"}))))))
 
-(defn triangulate [src dst gap]
-  (read-string
-   (:body
-    (client/post "http://localhost:9092/rush-hour/api/triangulate/edn"
-                 {:body (pr-str {:src src :dst dst :gap gap :extender "Philadelphia, PA"})
-                  :content-type "application/edn"}))))
+(def triangulate
+  (memoize
+   (fn [src dst gap]
+     (read-string
+      (:body
+       (client/post "http://localhost:9092/rush-hour/api/triangulate/edn"
+                    {:body (pr-str {:src src :dst dst :gap gap :extender "Philadelphia, PA"})
+                     :content-type "application/edn"}))))))
 
 (defn triangulate-ingress [driver src dst]
   (let [gap (:front driver)]
@@ -84,11 +90,12 @@
            (fn [_ _ _ sim-ss]
              (push-to-clients sim-ss)))
 
-(doto (WebServers/createWebServer 9093)
+(defn -main [& args]
+  (doto (WebServers/createWebServer 9093)
     (.add "/asphalt/streaming/edn"
           (proxy [WebSocketHandler] []
             (onOpen [chan] (swap! listeners conj chan))
             (onClose [chan] (swap! listeners disj chan))
             (onMessage [_])))
-    (.start))
+    (.start)))
 

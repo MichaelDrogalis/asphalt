@@ -17,5 +17,6 @@
                                         :provides ["google.maps"]}]
                         :compiler {:output-to "resources/compiled-cljs.js"
                                    :optimizations :whitespace
-                                   :pretty-print true}}]})
+                                   :pretty-print true}}]}
+  :main asphalt.relay)
 
