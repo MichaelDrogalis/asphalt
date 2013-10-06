@@ -12,7 +12,7 @@
    (fn [quad]
      (read-string
       (:body
-       (client/post "http://localhost:9091/rush-hour/api/reverse-links/edn"
+       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/reverse-links/edn"
                     {:body (pr-str quad)
                      :content-type "application/edn"}))))))
 
@@ -21,7 +21,7 @@
    (fn [quad]
      (read-string
       (:body
-       (client/post "http://localhost:9091/rush-hour/api/expand-quad/edn"
+       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/expand-quad/edn"
                     {:body (pr-str quad)
                      :content-type "application/edn"}))))))
 
@@ -30,7 +30,7 @@
    (fn [src dst gap]
      (read-string
       (:body
-       (client/post "http://localhost:9092/rush-hour/api/triangulate/edn"
+       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9092/rush-hour/api/triangulate/edn"
                     {:body (pr-str {:src src :dst dst :gap gap :extender "Philadelphia, PA"})
                      :content-type "application/edn"}))))))
 
@@ -72,7 +72,7 @@
 
 (def listeners (atom #{}))
 
-(def ws-chan (websocket-client {:url "http://localhost:9090/rush-hour/streaming/edn"}))
+(def ws-chan (websocket-client {:url "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9090/rush-hour/streaming/edn"}))
 
 (defn receive [snapshot]
   (swap! sim-snapshot
