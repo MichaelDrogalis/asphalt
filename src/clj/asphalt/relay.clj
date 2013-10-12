@@ -12,7 +12,7 @@
    (fn [quad]
      (read-string
       (:body
-       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/reverse-links/edn"
+       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/external-reverse-links/edn"
                     {:body (pr-str quad)
                      :content-type "application/edn"}))))))
 
