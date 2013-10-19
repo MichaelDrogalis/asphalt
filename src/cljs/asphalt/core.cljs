@@ -43,6 +43,7 @@
 (set! (.-onmessage ws) receive-fn)
 
 (go (loop []
-      (plot-coordinates (<! transport-chan))
+      (let [coordindates (<! transport-chan)]
+        (plot-coordinates coordindates))
       (recur)))
 

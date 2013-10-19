@@ -83,7 +83,6 @@
 
 (defn push-to-clients [ss]
   (doseq [channel @listeners]
-;;    (clojure.pprint/pprint {:snapshot ss})
     (.send channel (pr-str {:snapshot ss}))))
 
 (add-watch sim-snapshot :socket
