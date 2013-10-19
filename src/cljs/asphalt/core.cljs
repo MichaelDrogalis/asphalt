@@ -19,7 +19,7 @@
 
 (.addDomListener google.maps.event js/window "load" initialize-map)
 
-(def uri "ws://ec2-54-200-49-20.us-west-2.compute.amazonaws.com:9093/asphalt/streaming/edn")
+(def uri "ws://localhost:9093/asphalt/streaming/edn")
 
 (def ws (js/WebSocket. uri))
 

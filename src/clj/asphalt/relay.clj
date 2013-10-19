@@ -7,12 +7,14 @@
 
 (def trans-chan (chan 10000))
 
+(def config (read-string (slurp (clojure.java.io/resource "config.edn"))))
+
 (def reverse-links
   (memoize
    (fn [quad]
      (read-string
       (:body
-       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/external-reverse-links/edn"
+       (client/post (:reverse-links-url config)
                     {:body (pr-str quad)
                      :content-type "application/edn"}))))))
 
@@ -21,7 +23,7 @@
    (fn [quad]
      (read-string
       (:body
-       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/expand-quad/edn"
+       (client/post (:quad-expansion-url config)
                     {:body (pr-str quad)
                      :content-type "application/edn"}))))))
 
@@ -30,7 +32,7 @@
    (fn [src dst gap]
      (read-string
       (:body
-       (client/post "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9092/rush-hour/api/triangulate/edn"
+       (client/post (:triangulation-url config)
                     {:body (pr-str {:src src :dst dst :gap gap :extender "Philadelphia, PA"})
                      :content-type "application/edn"}))))))
 
@@ -72,7 +74,7 @@
 
 (def listeners (atom #{}))
 
-(def ws-chan (websocket-client {:url "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9090/rush-hour/streaming/edn"}))
+(def ws-chan (websocket-client {:url (:web-socket-channel config)}))
 
 (defn receive [snapshot]
   (swap! sim-snapshot

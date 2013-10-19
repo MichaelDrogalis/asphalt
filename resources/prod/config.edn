@@ -1,0 +1,5 @@
+{:reverse-links-url "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/external-reverse-links/edn"
+ :quad-expansion-url "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9091/rush-hour/api/expand-quad/edn"
+ :triangulation-url "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9092/rush-hour/api/triangulate/edn"
+ :web-socket-channel "http://ec2-54-200-124-211.us-west-2.compute.amazonaws.com:9090/rush-hour/streaming/edn"}
+

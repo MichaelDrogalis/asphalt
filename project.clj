@@ -12,6 +12,8 @@
                  [lamina "0.5.0"]
                  [clj-http "0.7.7"]]
   :plugins [[lein-cljsbuild "0.3.3"]]
+  :profiles {:dev {:resource-paths ["resources/dev"]}
+             :prod {:resource-paths ["resources/prod"]}}
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
                         :foreign-libs [{:file "https://maps.googleapis.com/maps/api/js?sensor=false"
                                         :provides ["google.maps"]}]
