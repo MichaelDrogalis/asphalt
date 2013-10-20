@@ -1,5 +1,5 @@
 {:reverse-links-url "http://127.0.0.1:9091/rush-hour/api/external-reverse-links/edn"
  :quad-expansion-url "http://127.0.0.1:9091/rush-hour/api/expand-quad/edn"
  :triangulation-url "http://127.0.0.1:9092/rush-hour/api/triangulate/edn"
- :web-socket-channel "http://127.0.0.1:9090/rush-hour/streaming/edn"}
+ :web-socket-channel "ws://127.0.0.1:9090/rush-hour/streaming/edn"}
 
