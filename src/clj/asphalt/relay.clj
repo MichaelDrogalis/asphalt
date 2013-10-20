@@ -37,11 +37,12 @@
                      :content-type "application/edn"}))))))
 
 (defn triangulate-ingress [driver src dst]
-  (let [gap (:front driver)]
+  (let [gap (min (:street.lane.install/length src) (:front driver))]
     (triangulate src dst gap)))
 
 (defn triangulate-egress [driver src dst]
-  (let [gap (+ (:street.lane.install/length dst) (:front driver))]
+  (let [gap (min (+ (:street.lane.install/length src) (:street.lane.install/length dst))
+                 (+ (:street.lane.install/length dst) (:front driver)))]
     (triangulate src dst gap)))
 
 (defn ingress-coordindates [payload]
